@@ -1,4 +1,50 @@
-<h2>Home Page</h2>
+<h2 class="columnTitle"><a href="" class="smashMagTitle">Smashing Magazine Scraper</a></h2>
+<section class="columnContainer">
+  <div class="columns">
+    <div class="column">Headline</div>
+    <div class="column">Summary</div>
+    <div class="column">Favorite</div>
+    <div class="column">Comment</div>
+  </div>
+{{#each article}}
+  <div class="columns articlesCol">
+    <div class="column headlineDiv">{{this.headline}}</div>
+    <div class="column summaryDiv"><p class="summaryText">{{this.summary}}</p>
+    <a href={{this.link}} alt="link to article">{{this.headline}}</a>
+    </div>
+    <div class="column faveBtn">
+      <form class="favorite-form" action="/api/article/{{this._id}}?_method=PUT" method="POST">
+      <input type="hidden" name="id" value={{this._id}}>
+      <button class="{{this._id}}-article-favorite btn btn-danger" data-id={{this._id}} data-comment={{this.comment}}>Favorite Article</button>
+    </div>
+    <div class="column commentDiv">
+      <span class=commentsHolder></span>
+    </div>
+    {{!-- <div class="column">Comment</div> --}}
+
+  </div>
+  {{/each}}
+</section>
+
+{{!-- <form action="/article/{{this._id}}" method="post">
+    <div class="form-group">
+        <label for="userNameInput">UserName</label>
+        <input type="text" id="userNameInput" class="form-control" name="userName" placeholder="Enter UserName">
+    </div>
+    <div class="form-group">
+        <label for="CommentInput">Comment</label>
+        <textarea id="commentInput" class="form-control" name="comment"  placeholder="Enter Comment"></textarea>
+    </div>
+    <button data-id={{this._id}} id="saveComment" type="submit" class="btn saveComment btn-primary">Save Comment</button>
+</form> --}}
+
+
+
+
+
+
+{{!-- 
+
 <table class="table table-dark">
     <thead>
         <tr>
@@ -11,30 +57,41 @@
     </thead>
     <tbody>
         {{#each article}}
-        <tr>
+        <tr class="articleRow" data-id={{this._id}}>
             <td>{{this._id}}</td>
             <td>{{this.headline}}</td>
             <td>{{this.summary}}</td>
-            <td>{{this.link}}/10</td>
+            <td>{{this.link}}</td>
             <td>
-                <button class="article-favorite" data-id={{this._id}}>Favorite Article</button>
+                <form class="favorite-form" action="/api/article/{{this._id}}?_method=PUT" method="POST">
+                  <input type="hidden" name="id" value={{this._id}}>
+                <button class="article-favorite btn btn-danger" data-id={{this._id}}>Favorite Article</button>
             </td>
+            <td class="comment-col">{{this.comment}}</td>
         </tr>
         {{/each}}
     </tbody>
-</table>
-<form action="/api/article" method="post">
+</table> --}}
+
+{{!-- {{#each article}}
+<div class="commentBox">
+<h4 class="user">{{this.userName}}</h4>
+<p class="comments">{{this.body}}</p>
+</div>
+{{/each}} --}}
+{{!-- {{#each article}} --}}
+<form action="/article/{{this._id}}" method="post">
     <div class="form-group">
-        <label for="headlineInput">Headline</label>
-        <input type="text" class="form-control" id="headlineInput" name="headline" placeholder="Enter headline">
+        <label for="userNameInput">UserName</label>
+        <input type="text" id="userNameInput" class="form-control" name="userName" placeholder="Enter UserName">
     </div>
     <div class="form-group">
-        <label for="summaryInput">Summary</label>
-        <input type="text" class="form-control" id="summaryInput" name="summary" placeholder="Enter summary">
+        <label for="CommentInput">Comment</label>
+        <textarea id="commentInput" class="form-control" name="comment"  placeholder="Enter Comment"></textarea>
     </div>
-    <div class="form-group">
-        <label for="linkInput">Link</label>
-        <input type="number" class="form-control" id="linkInput" name="link" placeholder="Enter link">
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button data-id={{this._id}} id="saveComment" type="submit" class="btn saveComment btn-primary">Save Comment</button>
 </form>
+{{!-- {{/each}} --}}
+
+
+

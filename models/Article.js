@@ -27,6 +27,10 @@ var ArticleSchema = new Schema({
   comment: {
     type: Schema.Types.ObjectId,
     ref: "Comment"
+  },
+  favorite: {
+    type: Boolean,
+    default: false
   }
 });
 
