@@ -55,7 +55,7 @@ mongoose.connect(MONGODB_URI);
 //       var result = {};
 
 //       // Add the text and href of every link, and save them as properties of the result object
-//       result.title = $(this)
+//       result.headline = $(this)
 //         .children("a")
 //         .text();
 //       result.link = $(this)
@@ -129,8 +129,79 @@ mongoose.connect(MONGODB_URI);
 //     });
 // });
 
+var scrapeURL = "https://www.smashingmagazine.com/articles/";
+var URL = "https://www.smashingmagazine.com/";
+
+// A GET route for scraping the echoJS website
+app.get("/scrape", function(req, res) {
+  // First, we grab the body of the html with request
+  axios.get(scrapeURL).then(function(response) {
+    // Then, we load that into cheerio and save it to $ for a shorthand selector
+    var $ = cheerio.load(response.data);
+
+    // Now, we grab every h2 within an article tag, and do the following:
+    $("article.article--post").each(function(i, element) {
+      // Save an empty result object
+      var result = {};
+
+      // Add the text and href of every link, and save them as properties of the result object
+      result.headline = $(element).find("h1.article--post__title").text();
+      result.summary = $(element).find("div.article--post__content").children("p").text();
+      // result.summary = $(element).find("div.article--post__content").children("p").not("time.article--post__time", "a.read-more-link");
+      result.link = URL + $(element).find("h1.article--post__title").children("a").attr("href");
+
+      // Create a new Article using the `result` object built from scraping
+      db.Article.create(result)
+        .then(function(dbArticle) {
+          // View the added result in the console
+          console.log(dbArticle);
+        })
+        .catch(function(err) {
+          // If an error occurred, send it to the client
+          return res.json(err);
+        });
+    });
+
+    // If we were able to successfully scrape and save an Article, send a message to the client
+    res.send("Scrape Complete");
+  });
+});
+
+app.get("/scraper", function(req, res) {
+  // First, we grab the body of the html with request
+  axios.get(URL).then(function(response) {
+    // Then, we load that into cheerio and save it to $ for a shorthand selector
+    var $ = cheerio.load(response.data);
+
+    // Now, we grab every h2 within an article tag, and do the following:
+    $("h2.featured-article__title").each(function(i, element) {
+      // Save an empty result object
+      var result = {};
+
+      // Add the text and href of every link, and save them as properties of the result object
+      result.headline = $(element).find("a.featured-article__title__a").text();
+      result.summary = "Stuff and things";
+      result.link = URL + $(element).children().attr("href");
+
+      // Create a new Article using the `result` object built from scraping
+      db.Article.create(result)
+        .then(function(dbArticle) {
+          // View the added result in the console
+          console.log(dbArticle);
+        })
+        .catch(function(err) {
+          // If an error occurred, send it to the client
+          return res.json(err);
+        });
+    });
+
+    // If we were able to successfully scrape and save an Article, send a message to the client
+    res.send("Scrape Complete");
+  });
+});
+
 // SEE BELOW FOR VIRTUAL OFFICE HOURS EXAMPLE WITH HANDLEBARS
-// GET all the articles that favorite is set to false
+// GET all the articles from the DB that favorite is set to false
 // and render them to the index.handlebars page
 app.get("/", function(req, res) {
   db.Article.find({ favorite: false })
@@ -154,6 +225,7 @@ app.get("/favorites", function(req, res) {
     });
 });
 
+// TODO - UPDATE THIS TO MAKE IT A COMMENT CREATOR
 // POST a new article to the mongo database
 app.post("/api/article", function(req, res){
   db.Article.create(req.body)
